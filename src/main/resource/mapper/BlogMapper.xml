@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cooooode.mapper.BlogMapper">
+    <resultMap id="blog" type="com.cooooode.pojo.Blog">
+        <id column="id" property="id"/>
+        <result property="name" column="name"></result>
+        <result property="html" column="html"></result>
+        <result property="time" column="time"></result>
+        <result column="user_id" property="user_id"></result>
+        <association property="user" column="user_id" select="getUserById">
+        </association>
+    </resultMap>
+    <resultMap id="user" type="com.cooooode.pojo.User">
+        <id column="id" property="id"></id>
+        <result column="name" property="name"></result>
+        <result column="password" property="password"></result>
+        <result column="email" property="email"></result>
+    </resultMap>
+    <insert id="insertBlog" >
+        INSERT INTO blog (id, name,html,time,user_id)
+        values (#{id},#{name},#{html},#{time},#{user_id})
+    </insert>
+    <select id="getBlogById" resultMap="blog">
+        SELECT b.id, b.name,b.html,b.time,b.user_id FROM blog b WHERE b.id=#{id} AND b.user_id=#{user_id}
+    </select>
+    <select id="getUserById" resultType="com.cooooode.pojo.User">
+        SELECT id, name,email,password FROM user WHERE id=#{id}
+    </select>
+    <select id="getBlogByUnameAndBid" resultMap="blog">
+        SELECT b.id, b.name,b.html,b.time,b.user_id FROM blog b
+        WHERE b.user_id=(
+        SELECT u.id FROM user u WHERE u.name=#{user_name}
+        ) AND
+        b.id=#{id};
+    </select>
+    <select id="getPartialBlogs" resultMap="blog">
+        SELECT b.id, b.name,b.html,b.time,b.user_id FROM blog b
+        WHERE b.user_id=#{user_id}
+        ORDER BY b.time DESC
+        LIMIT #{start}, 10;
+    </select>
+    <select id="getBlogsNumberByUserId" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM blog
+        WHERE user_id=#{user_id};
+    </select>
+    <update id="updateBlog" >
+        UPDATE blog SET name=#{name},html=#{html},time=#{time}
+        WHERE
+        id=#{id} AND user_id=#{user_id}
+    </update>
+    <delete id="deleteBlog" >
+        DELETE FROM blog WHERE user_id=#{user_id} AND id=#{id}
+    </delete>
+</mapper>

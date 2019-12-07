@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+    ">
+    <!--c3p0-->
+    <!--<bean id="globalConfig" class="com.cooooode.config.GlobalConfig"></bean>-->
+    <context:component-scan base-package="com.cooooode.service"/>
+    <context:component-scan base-package="com.cooooode.config"/>
+    <context:property-placeholder ignore-resource-not-found="true" location="classpath:jdbc.properties"></context:property-placeholder>
+    <bean id= "dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="${jdbc.driver}"></property>
+        <property name="jdbcUrl" value="${jdbc.url}"></property>
+        <property name="user" value="${jdbc.username}"></property>
+        <property name="password" value="${jdbc.password}"></property>
+    </bean>
+    <bean id="jedis" class="redis.clients.jedis.Jedis" >
+        <constructor-arg name="host" value="${redis.host}"/>
+        <constructor-arg name="port" value="${redis.port}"/>
+    </bean>
+    <!--dbcp-->
+    <!--<bean id= "dataSource" class="org.apache.commons.dbcp2.BasicDataSource">-->
+        <!--<property name="driver" value=""></property>-->
+        <!--<property name="url" value=""></property>-->
+        <!--<property name="username" value=""></property>-->
+        <!--<property name="password" value=""></property>-->
+    <!--</bean>-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="mapperLocations" value="classpath:mapper/*Mapper.xml"></property>
+        <property name="transactionFactory">
+            <bean class="org.apache.ibatis.transaction.managed.ManagedTransactionFactory" />
+        </property>
+    </bean>
+    <bean name="mapperScannerConfigurer" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.cooooode.mapper"/>
+    </bean>
+
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg index="0" ref="sqlSessionFactory" />
+    </bean>
+
+
+</beans>
