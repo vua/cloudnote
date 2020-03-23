@@ -1,5 +1,5 @@
 # Cloudnote
-An online note system (support for code highlinghting)
+An online note system (support for code highlighting)
 
     一个由maven构建简单的ssm项目,可以做为在线笔记使用,支持语法高亮,简单分页
     
